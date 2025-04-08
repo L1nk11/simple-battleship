@@ -33,3 +33,5 @@ function newShip(length, shipName) {
 
     return { hit, isSunk, getLength, getShipPosition, setShipPosition, getName }
 }
+
+export {newShip}
