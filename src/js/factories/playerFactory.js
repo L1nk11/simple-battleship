@@ -1,4 +1,5 @@
 import { newShip } from "./shipFactory"
+import { newBoard } from "./boardFactory"
 
 function newPlayer() {
     const board = newBoard()
@@ -34,3 +35,5 @@ function newPlayer() {
 
     return {board, increaseScore, getScore, setShips, getShipColection}
 }
+
+export {newPlayer}
