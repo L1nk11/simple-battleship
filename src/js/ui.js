@@ -16,7 +16,6 @@ function gameStart() {
     const player1 = newPlayer()
     const player2 = newPlayer() // <- bot
     startForm(player1)
-    
 
     
 }
@@ -31,6 +30,7 @@ function startForm(player1) {
     const rotateButton = document.createElement('button')
     const playButton = document.createElement('button')
     const formHolder = document.querySelector('.form-holder')
+    subTitle.classList.add('subtitle')
 
     let orientation = 'horizontal'
     rotateButton.addEventListener('click', () => {
@@ -46,6 +46,10 @@ function startForm(player1) {
 
     const ships = player1.getShipColection()
     title.textContent = 'Welcome to Battleship'
+
+    // get ships and for each one wait player to click on cell and for each
+    // click count one++ until it is equal to ship list length
+    // also when selecting cell call function to place ship on map.
 
     formHolder.appendChild(title)
     formHolder.appendChild(subTitle)
@@ -76,3 +80,8 @@ function genBoard(player) {
     }
     return boardHolder
 }
+
+function setTheme() {
+    body.id = 'dark'
+}
+setTheme()

@@ -9,3 +9,26 @@ body {
     min-width: 100vh;
 }
 
+body#light {
+    --bg-color1: #495464;
+    --bg-color2: #c7c7df;
+    --bg-color3: #e4e5f1;
+    --bg-color4: #fafafa;
+    --text-color: #484b6a;
+    --text-faded-color: #9394a5;
+    --highlight-color: #1579DA;
+    --highlight-faded-color: #065bb1;
+    --battleship-color: #3dd2ff;
+}
+
+body#dark {
+    --bg-color1: #585858;
+    --bg-color2: #2f3235;
+    --bg-color3: #242629;
+    --bg-color4: #181A1D;
+    --text-color: #f0f0f0;
+    --text-faded-color: #7c8188;
+    --highlight-color: #BA4545;
+    --highlight-faded-color: #4A2E30;
+    --battleship-color: #ff0b0b;
+}
