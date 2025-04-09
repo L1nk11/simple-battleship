@@ -4,6 +4,8 @@ import { newBoard } from "./boardFactory"
 function newPlayer() {
     const board = newBoard()
     const shipColection = []
+    let shipIndex = 0
+    let indexEnd = false
     let score = 0
 
     function increaseScore() {
@@ -33,7 +35,25 @@ function newPlayer() {
         return shipColection
     }
 
-    return {board, increaseScore, getScore, setShips, getShipColection}
+    function isIndexAtEnd() {
+        return indexEnd
+    }
+
+    function getIndex() {
+        return shipIndex
+    }
+
+    function advanceShipIndex() {
+        if (shipIndex < shipColection.length) {
+            shipIndex++
+            console.log('ship index = '+shipIndex)
+            if (shipIndex == 5) {
+                indexEnd = true
+            }
+        }
+    }
+
+    return {board, increaseScore, getScore, setShips, getShipColection, advanceShipIndex, isIndexAtEnd, getIndex}
 }
 
 export {newPlayer}

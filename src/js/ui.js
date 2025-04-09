@@ -1,6 +1,8 @@
 import { newPlayer } from "./factories/playerFactory"
 
 const body = document.querySelector('body')
+let canProceed = false
+let orientation = 'horizontal'
 
 function gameStart() {
     const overlay = document.createElement('div')
@@ -32,7 +34,6 @@ function startForm(player1) {
     const formHolder = document.querySelector('.form-holder')
     subTitle.classList.add('subtitle')
 
-    let orientation = 'horizontal'
     rotateButton.addEventListener('click', () => {
         if (orientation === 'horizontal') {
             orientation = 'vertical'
@@ -44,12 +45,20 @@ function startForm(player1) {
     rotateButton.textContent = 'Rotate'
     playButton.textContent = 'Play game'
 
-    const ships = player1.getShipColection()
     title.textContent = 'Welcome to Battleship'
 
     // get ships and for each one wait player to click on cell and for each
     // click count one++ until it is equal to ship list length
     // also when selecting cell call function to place ship on map.
+    // placeShips(player1.getShipColection()) <- deprecated
+
+    playButton.addEventListener('click', () => {
+        console.log(canProceed)
+        if (canProceed === true) {
+            // allow player to proceed to the game
+            console.log('able to continue')
+        }
+    })
 
     formHolder.appendChild(title)
     formHolder.appendChild(subTitle)
@@ -62,16 +71,23 @@ function genBoard(player) {
     const boardHolder = document.createElement('div')
     boardHolder.classList.add('board-holder')
     
-    for (let i = 0; i < player.board.getBoard().length; i++) {
+    for (let y = 0; y < player.board.getBoard().length; y++) {
         const row = document.createElement('div')
         row.classList.add('row')
 
-        for (let j = 0; j < player.board.getBoard()[i].length; j++) {
+        for (let x = 0; x < player.board.getBoard()[y].length; x++) {
             const cell = document.createElement('div')
             cell.classList.add('cell')
             
-            cell.addEventListener('click', () => {
+            cell.dataset.x = x
+            cell.dataset.y = y
 
+            cell.addEventListener('click', () => {
+                let helper = shipPlacement(player, parseInt(cell.dataset.x), parseInt(cell.dataset.y))
+
+                if (helper === true) {
+                    updateBoard()
+                }
             })
 
             row.appendChild(cell)
@@ -82,6 +98,34 @@ function genBoard(player) {
 }
 
 function setTheme() {
+    // make function to change theme
     body.id = 'dark'
 }
 setTheme()
+
+function shipPlacement(player, x, y) {
+    if (player.isIndexAtEnd() === true) {
+        console.log(player.board.getBoard())
+        return
+    } else {
+        const ship = player.getShipColection()[player.getIndex()]
+        
+        let a = player.board.placeShip(ship, x, y, orientation)
+        if (a === true) {
+            player.advanceShipIndex()
+            if (player.isIndexAtEnd() === true) {
+                canProceed = true 
+            }
+            console.log(canProceed)
+            return true
+        } else if (a === false) {
+            console.log('some error ocurred')
+            return false
+        }
+        
+    }
+}
+
+function updateBoard() {
+    
+}

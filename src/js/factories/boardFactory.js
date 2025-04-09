@@ -1,23 +1,23 @@
 function newBoard() {
     const board = []
 
-    // generate 10x10 board when object is created
     function generateBoard(boardSize) {
-        for (let row = 0; row < boardSize; row++) {
-            const rowArray = []
-            for (let collumn = 0; collumn < boardSize; collumn++) {
-                rowArray.push({hasShip: false, isHit: false, x: collumn, y: row, shipReference: null})
+        for (let col = 0; col < boardSize; col++) {
+            const colArray = []
+            for (let row = 0; row < boardSize; row++) {
+                colArray.push({hasShip: false, isHit: false, x: row, y: col, shipReference: null})
             }
-            board.push(rowArray)
+            board.push(colArray)
         }
         return board
     }
     generateBoard(10)
 
-    function placeShip(shipObj, x, y, orientation) {
-        const placedPositions = []
+    // false = fail, true = success
+    function placeShip(shipObject, x, y, orientation) {
+        const cellsToFill = []
 
-        for (let i = 0; i < shipObj.getLength(); i++) {
+        for (let i = 0; i < shipObject.getLength(); i++) {
             let targetX = x
             let targetY = y
 
@@ -26,33 +26,39 @@ function newBoard() {
             } else if (orientation === 'vertical') {
                 targetY += i
             } else {
-                throw new Error("invalid orientation passed");
+                // orientation check
+                console.log('Invalid orientation. Must be "horizontal" or "vertical".')
+                return false
             }
 
-            // check board boundarie
-            if (targetX >= 10 || targetY >= 10) {
-                // return false
-                throw new Error("ship out of bounds");
+            // Bounds x check
+            if (targetX < 0 || targetX >= board[0].length) {
+                console.log('x is out of bounds')
+                return false
             }
 
-            const cell = board[targetY][targetX]
-
-            if (cell.hasShip === true) {
-                // return false
-                throw new Error("the cell already has a ship");
+            // Bounds y check
+            if (targetY < 0 || targetY >= board.length) {
+                console.log('y is out of bounds')
+                return false
             }
 
-            // return true
-            placedPositions.push(cell)
+            // check ship overlap
+            if (board[targetY][targetX].hasShip) {
+                console.log('ship overlap detected')
+                return false
+            }
+
+            cellsToFill.push(board[targetY][targetX])
         }
-
-        placedPositions.forEach(cell => {
+        
+        
+        // place ship inside the board
+        cellsToFill.forEach(cell => {
             cell.hasShip = true
-            cell.shipReference = shipObj
-        })
-
-        // create a array and pass it to shipObj.setShipPosition
-        shipObj.setShipPosition(placedPositions.map(cell => ({ x: cell.x, y: cell.y })))
+            cell.shipReference = shipObject
+        });
+        return true
     }
 
     function placeAttack(x, y) {
