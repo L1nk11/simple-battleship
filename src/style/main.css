@@ -1,3 +1,52 @@
 main {
     flex-grow: 1;
 }
+
+main .board-holders {
+    display: flex;
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+    gap: 20px;
+    /* justify-content: center; */
+    align-items: center;
+}
+
+.board {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    aspect-ratio: 1/1;
+    border: 1px solid var(--highlight-color);
+}
+
+.board .row {
+    width: 100%;
+    height: 10%;
+    display: flex;
+}
+
+.board .row .cell {
+    flex-grow: 1;
+    border: 1px solid var(--bg-color1);
+}
+
+.board .row .cell#ship {
+    background-color: var(--bg-color2);
+}
+
+.board.attackable .row .cell:hover {
+    background-color: var(--bg-color2);
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    main .board-holders {
+        flex-direction: column;
+    }
+
+    .board {
+        max-width: 400px;
+    }
+}
+

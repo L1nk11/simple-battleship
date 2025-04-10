@@ -48,6 +48,9 @@ function genMainBoard(player) {
 }
 
 function populateBotBoard(bot) {
+    // get ship list
+    // loop in the list
+        // gen random position and pass to placeShip
     
 }
 
