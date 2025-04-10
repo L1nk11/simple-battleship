@@ -11,7 +11,6 @@ function setBoards(player1, player2) {
     contentHolder.appendChild(genMainBoard(player1))
     populateBotBoard(player2)
     contentHolder.appendChild(genMainBoard(player2))
-    console.log(player1.board.getBoard())
     main.appendChild(contentHolder)
 }
 
@@ -30,13 +29,13 @@ function genMainBoard(player) {
             const cell = document.createElement('div')
             cell.classList.add('cell')
             
-            if (player.board.getBoard()[y][x].hasShip === true) {
+            if (player.board.getBoard()[y][x].hasShip === true && player.getType() === 'player') {
                 cell.id = 'ship'
             }
 
             if (player.getType() === 'bot') {
                 cell.addEventListener('click', () => {
-                    // add function to allow attack
+                    // add function to allow player to attack
                 })
             }
 
@@ -48,10 +47,40 @@ function genMainBoard(player) {
 }
 
 function populateBotBoard(bot) {
-    // get ship list
-    // loop in the list
-        // gen random position and pass to placeShip
-    
+    const shipList = bot.getShipColection()
+
+    for (let i = 0; i < shipList.length; i++) {
+        // define orientation
+        let orientation = ''
+        let randomBit = Math.random() < 0.5 ? 0 : 1;
+        if (randomBit === 1) {
+            orientation = 'horizontal'
+        } else if (randomBit === 0) {
+            orientation = 'vertical'
+        } else {
+            console.log(`error when defining ${shipList[i].getName()} orientation`)
+            return
+        }
+        
+        // define x and y
+        let xCordinate = undefined
+        let yCordinate = undefined
+        if (orientation === 'horizontal') {
+            xCordinate = Math.floor(Math.random() * (10 - shipList[i].getLength()))
+            yCordinate = Math.floor(Math.random() * 10)
+        } else {
+            xCordinate = Math.floor(Math.random() * 10)
+            yCordinate = Math.floor(Math.random() * (10 - shipList[i].getLength()))
+        }
+        
+        let res = bot.board.placeShip(bot.getShipColection()[i], xCordinate, yCordinate, orientation)
+
+        if (!res.success) {
+            i--
+            continue
+        }
+    }
+    console.log(bot.board.getBoard())
 }
 
 export {gameManager}
