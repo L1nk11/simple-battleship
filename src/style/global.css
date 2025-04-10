@@ -5,8 +5,12 @@
 }
 
 body {
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
-    min-width: 100vh;
+    min-width: 100vw;
+    min-height: 100vh;
+    background-color: var(--bg-color4);
 }
 
 body#light {

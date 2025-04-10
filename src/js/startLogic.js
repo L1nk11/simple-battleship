@@ -1,4 +1,5 @@
 import { newPlayer } from "./factories/playerFactory"
+import {setBoards, gameManager} from './gameLogic'
 
 const body = document.querySelector('body')
 let canProceed = false
@@ -10,23 +11,18 @@ function gameStart() {
     const placement = document.createElement('div')
     placement.classList.add('form-holder')
     overlay.style.display = 'flex'
-    // overlay.style.display = ''
 
     overlay.appendChild(placement)
     body.appendChild(overlay)
 
-    const player1 = newPlayer()
-    const player2 = newPlayer() // <- bot
-    startForm(player1)
-
-    
+    const player1 = newPlayer('player')
+    const player2 = newPlayer('bot') // <- bot
+    startForm(player1, player2)
 }
 gameStart()
 
-function startForm(player1) {
-    // make a form and get the board to place the ship
-    // when the play button is pressed send position to board
-    // and remove overlay
+function startForm(player1, player2) {
+    const overlay = document.querySelector('.overlay')
     const title = document.createElement('div')
     const subTitle = document.createElement('div')
     const rotateButton = document.createElement('button')
@@ -47,16 +43,14 @@ function startForm(player1) {
 
     title.textContent = 'Welcome to Battleship'
 
-    // get ships and for each one wait player to click on cell and for each
-    // click count one++ until it is equal to ship list length
-    // also when selecting cell call function to place ship on map.
-    // placeShips(player1.getShipColection()) <- deprecated
-
     playButton.addEventListener('click', () => {
-        console.log(canProceed)
         if (canProceed === true) {
-            // allow player to proceed to the game
-            console.log('able to continue')
+            // call function to generate board in the main game area
+            gameManager(player1, player2)
+
+            // remove overlay
+            overlay.innerHTML = ''
+            overlay.style.display = 'none'
         }
     })
 
@@ -70,6 +64,8 @@ function startForm(player1) {
 function genBoard(player) {
     const boardHolder = document.createElement('div')
     boardHolder.classList.add('board-holder')
+    const subtitle = document.querySelector('.subtitle')
+    subtitle.textContent = 'place your carrier'
     
     for (let y = 0; y < player.board.getBoard().length; y++) {
         const row = document.createElement('div')
@@ -83,10 +79,31 @@ function genBoard(player) {
             cell.dataset.y = y
 
             cell.addEventListener('click', () => {
-                let helper = shipPlacement(player, parseInt(cell.dataset.x), parseInt(cell.dataset.y))
+                shipPlacement(player, parseInt(cell.dataset.x), parseInt(cell.dataset.y))
 
-                if (helper === true) {
-                    updateBoard()
+                switch (player.getIndex()) {
+                    case 1:
+                            subtitle.textContent = 'place your battleship'
+                        break;
+                    
+                    case 2:
+                            subtitle.textContent = 'place your cruiser'
+                        break;
+
+                    case 3:
+                            subtitle.textContent = 'place your submarine'
+                        break;
+
+                    case 4:
+                            subtitle.textContent = 'place your destroyer'
+                        break;
+                
+                    default:
+                        break;
+                }
+                if (canProceed == true) {
+                    subtitle.textContent = "you're ready to play"
+                    subtitle.id = 'ready'
                 }
             })
 
@@ -105,18 +122,17 @@ setTheme()
 
 function shipPlacement(player, x, y) {
     if (player.isIndexAtEnd() === true) {
-        console.log(player.board.getBoard())
         return
     } else {
         const ship = player.getShipColection()[player.getIndex()]
         
         let a = player.board.placeShip(ship, x, y, orientation)
-        if (a === true) {
+        if (a.success === true) {
             player.advanceShipIndex()
+            markCells(a.list)
             if (player.isIndexAtEnd() === true) {
                 canProceed = true 
             }
-            console.log(canProceed)
             return true
         } else if (a === false) {
             console.log('some error ocurred')
@@ -126,6 +142,10 @@ function shipPlacement(player, x, y) {
     }
 }
 
-function updateBoard() {
-    
+function markCells(list) {
+    const form = document.querySelector('.form-holder')
+    list.forEach(element => {
+        const cell = form.querySelector(`.cell[data-x='${element.x}'][data-y='${element.y}']`)
+        cell.id = 'marked'
+    });
 }

@@ -58,7 +58,7 @@ function newBoard() {
             cell.hasShip = true
             cell.shipReference = shipObject
         });
-        return true
+        return {success: true, list: cellsToFill}
     }
 
     function placeAttack(x, y) {
