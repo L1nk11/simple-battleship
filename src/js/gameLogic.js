@@ -15,7 +15,7 @@ function setBoards(player1, player2) {
     populateBotBoard(player2)
     contentHolder.appendChild(genMainBoard(player2))
     main.appendChild(contentHolder)
-    manageAttack(player2)
+    manageAttack(player2, player1)
 
 }
 
@@ -24,6 +24,8 @@ function genMainBoard(player) {
     board.classList.add('board')
     if (player.getType() === 'bot') {
         board.classList.add('attackable')
+    } else {
+        board.classList.add('player')
     }
 
     for (let y = 0; y < player.board.getBoard().length; y++) {
@@ -40,15 +42,6 @@ function genMainBoard(player) {
             if (player.board.getBoard()[y][x].hasShip === true && player.getType() === 'player') {
                 cell.id = 'ship'
             }
-
-            // if (player.getType() === 'bot') {
-            //     cell.addEventListener('click', () => {
-            //         // add function to allow player to attack
-            //         if (playerCanAttack()) {
-                        
-            //         }
-            //     })
-            // }
 
             row.appendChild(cell)
         }
@@ -91,7 +84,6 @@ function populateBotBoard(bot) {
             continue
         }
     }
-    console.log(bot.board.getBoard())
 }
 
 function playerCanAttack() {
@@ -107,11 +99,57 @@ function advanceTurn() {
     return turn++
 }
 
-function genBotAttack() {
-    
+function genBotAttack(bot, player) {
+    while (true) {
+        let x = 0
+        let y = 0
+        if (lastBotAttack.length === 0) {
+            x = Math.floor(Math.random() * 10)
+            y = Math.floor(Math.random() * 10)
+        } else {
+            x = lastBotAttack.X
+            y = lastBotAttack.Y
+            while (true) {
+                let xTemp = x + (Math.random() < 0.5 ? -1 : 1)
+
+                if (Number.isInteger(xTemp) && xTemp >= 0 && xTemp <= 9) {
+                    x = xTemp
+                    break
+                }
+            }
+
+            while (true) {
+                let yTemp = y + (Math.random() < 0.5 ? -1 : 1)
+
+                if (Number.isInteger(yTemp) && yTemp >= 0 && yTemp <= 9) {
+                    y = yTemp
+                    break
+                }
+            }
+
+            lastBotAttack = {}
+        }
+
+        const a = player.board.placeAttack(x, y)
+
+        const playerBoard = document.querySelector('.player')
+        const cell = playerBoard.querySelector(`.cell[data-x='${x}'][data-y='${y}']`)
+
+        if (a === false) {
+            console.log('error ocurred when placing bot attack')
+        } else if (a.success === true) {
+            cell.id = 'hit'
+            lastBotAttack = {X: x, Y: y}
+            // call damage into hitted ship
+            return true
+        } else {
+            cell.id = 'miss'
+            return true
+        }
+    }
 }
 
-function manageAttack(bot) {
+function manageAttack(bot, player) {
     const botBoard = document.querySelector('.attackable')
     const botCells = botBoard.querySelectorAll('.cell')
 
@@ -124,15 +162,23 @@ function manageAttack(bot) {
                 const a = bot.board.placeAttack(x, y)
 
                 if (a.success === true) {
-                    // mark cell as succesfull hitted
+                    cell.id = 'hit'
+                    console.log(a.shipRef)
+                    // call damage into hitted ship
                     advanceTurn()
-                    // make a checkk to see if player sunk all ships
-                    genBotAttack()
-                } else {
-                    // mark cell as missed hit
+
+                    // make a check to see if player sunk all ships
+
+                    // gen bot attack
+                    genBotAttack(bot, player)
                     advanceTurn()
-                    genBotAttack()
+                } else if (a.success === false) {
+                    cell.id = 'miss'
+                    advanceTurn()
+                    genBotAttack(bot, player)
+                    advanceTurn()
                     // make a check to see if bot sunk all ships
+                } else {
                     return
                 }
             }

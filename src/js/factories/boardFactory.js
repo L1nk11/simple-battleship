@@ -87,7 +87,7 @@ function newBoard() {
     
         // If no matching cell was found
         console.log('attack missed (no matching cell)')
-        return { success: false, shipRef: null }
+        return false
     }
 
     function getBoard() {
