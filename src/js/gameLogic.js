@@ -2,6 +2,9 @@ function gameManager(player1, player2) {
     setBoards(player1, player2)
 }
 
+let turn =  0
+let lastBotAttack = {}
+
 function setBoards(player1, player2) {
     const main = document.querySelector('main')
     const contentHolder = document.createElement('div')
@@ -12,6 +15,8 @@ function setBoards(player1, player2) {
     populateBotBoard(player2)
     contentHolder.appendChild(genMainBoard(player2))
     main.appendChild(contentHolder)
+    manageAttack(player2)
+
 }
 
 function genMainBoard(player) {
@@ -28,16 +33,22 @@ function genMainBoard(player) {
         for (let x = 0; x < player.board.getBoard()[y].length; x++) {
             const cell = document.createElement('div')
             cell.classList.add('cell')
+
+            cell.dataset.x = x
+            cell.dataset.y = y
             
             if (player.board.getBoard()[y][x].hasShip === true && player.getType() === 'player') {
                 cell.id = 'ship'
             }
 
-            if (player.getType() === 'bot') {
-                cell.addEventListener('click', () => {
-                    // add function to allow player to attack
-                })
-            }
+            // if (player.getType() === 'bot') {
+            //     cell.addEventListener('click', () => {
+            //         // add function to allow player to attack
+            //         if (playerCanAttack()) {
+                        
+            //         }
+            //     })
+            // }
 
             row.appendChild(cell)
         }
@@ -81,6 +92,52 @@ function populateBotBoard(bot) {
         }
     }
     console.log(bot.board.getBoard())
+}
+
+function playerCanAttack() {
+    // must return true or false
+    if (turn % 2 === 0) {
+        return true
+    }
+
+    return false
+}
+
+function advanceTurn() {
+    return turn++
+}
+
+function genBotAttack() {
+    
+}
+
+function manageAttack(bot) {
+    const botBoard = document.querySelector('.attackable')
+    const botCells = botBoard.querySelectorAll('.cell')
+
+    botCells.forEach(cell => {
+        cell.addEventListener('click', () => {
+            if (playerCanAttack()) {
+                const x = cell.getAttribute('data-x')
+                const y = cell.getAttribute('data-y')
+                console.log(x, y)
+                const a = bot.board.placeAttack(x, y)
+
+                if (a.success === true) {
+                    // mark cell as succesfull hitted
+                    advanceTurn()
+                    // make a checkk to see if player sunk all ships
+                    genBotAttack()
+                } else {
+                    // mark cell as missed hit
+                    advanceTurn()
+                    genBotAttack()
+                    // make a check to see if bot sunk all ships
+                    return
+                }
+            }
+        })
+    })
 }
 
 export {gameManager}

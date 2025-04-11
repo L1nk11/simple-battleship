@@ -62,26 +62,32 @@ function newBoard() {
     }
 
     function placeAttack(x, y) {
-        // false = attack not executed | true = attack sucessful
-        board.forEach(row => {
-            row.forEach(cell => {
-                if (cell.x === x && cell.y === y) {
+        for (let i = 0; i < board.length; i++) {
+            let row = board[i]
+            for (let j = 0; j < row.length; j++) {
+                let cell = row[j]
+    
+                if (cell.x == x && cell.y == y) {
                     if (cell.isHit === true) {
                         console.log('cell already hitted')
-                        return false
+                        return { success: false, shipRef: null }
                     }
-
-                    // do code to pass turn
+    
                     cell.isHit = true
-
                     if (cell.hasShip === true) {
-                        // return cell.shipReference
-                        return true, cell.shipReference
+                        console.log('attack successful')
+                        return { success: true, shipRef: cell.shipReference }
+                    } else {
+                        console.log('attack missed')
+                        return { success: false, shipRef: null }
                     }
                 }
-            })
-        })
-        return false
+            }
+        }
+    
+        // If no matching cell was found
+        console.log('attack missed (no matching cell)')
+        return { success: false, shipRef: null }
     }
 
     function getBoard() {
