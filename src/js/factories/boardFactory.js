@@ -70,7 +70,7 @@ function newBoard() {
                 if (cell.x == x && cell.y == y) {
                     if (cell.isHit === true) {
                         console.log('cell already hitted')
-                        return { success: false, shipRef: null }
+                        return { success: false, shipRef: null, hitted: true }
                     }
     
                     cell.isHit = true
