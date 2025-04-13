@@ -21,7 +21,6 @@ function setBoards(player1, player2) {
 }
 
 function genMainBoard(player) {
-    console.log(player.board.getBoard()[0])
     const board = document.createElement('div')
     board.classList.add('board')
     if (player.getType() === 'bot') {
@@ -117,9 +116,9 @@ function genBotAttack(bot, player) {
         return
     } else if (attack.success === true) {
         cell.id = 'hit'
+        hitShip(attack.shipRef, player)
         lastBotAttack = {X: x, Y: y}
         lastBotAttackHitted = true
-        // check if bot sunk all ships
     } else {
         cell.id = 'miss'
         lastBotAttack = {X: x, Y: y}
@@ -197,20 +196,25 @@ function manageAttack(bot, player) {
             if (playerCanAttack()) {
                 const x = cell.getAttribute('data-x')
                 const y = cell.getAttribute('data-y')
-                console.log(x, y)
                 const a = bot.board.placeAttack(x, y)
                 player.getShipColection()[0].getName()
 
                 if (a.success === true) {
                     cell.id = 'hit'
-                    console.log(a.shipRef)
-                    // call damage into hitted ship
+                    hitShip(a.shipRef, bot)
                     advanceTurn()
 
-                    // make a check to see if player sunk all ships
+                    if (checkShipsState(bot)) {
+                        endGame(player)
+                        return
+                    }
 
                     genBotAttack(bot, player)
-                    // make a check to see if bot sunk all ships
+
+                    if (checkShipsState(player)) {
+                        endGame(bot)
+                        return
+                    }
 
                     advanceTurn()
                 } else if (a.success === false) {
@@ -218,7 +222,11 @@ function manageAttack(bot, player) {
                     advanceTurn()
 
                     genBotAttack(bot, player)
-                    // make a check to see if bot sunk all ships
+
+                    if (checkShipsState(player)) {
+                        endGame(bot)
+                        return
+                    }
 
                     advanceTurn()
                 } else {
@@ -234,8 +242,24 @@ function hitShip(shipref, player) {
     for (let i = 0; i < player.getShipColection().length; i++) {
         if (player.getShipColection()[i].getName() === shipref.getName()) {
             player.getShipColection()[i].hit()
+            return
         }
     }
+}
+
+function checkShipsState(player) {
+    return player.getShipColection().every(ship => ship.isSunk())
+}
+
+function endGame(player) {
+    // make a endgame screen
+    const main = document.querySelector('main')
+    main.innerHTML = ''
+    const endGameScreen = document.createElement('div')
+    endGameScreen.classList.add('endgame-screen')
+    endGameScreen.textContent = `${player.getType()} won!`
+
+    main.appendChild(endGameScreen)
 }
 
 export {gameManager}

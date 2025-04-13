@@ -1,18 +1,18 @@
 function newShip(length, shipName) {
     let hits = 0
-    let sunk = false
     let position = []
     let name = shipName
 
     const hit = () => {
         hits++
+        console.log('hitted '+ name)
     }
 
     function isSunk() {
         if (hits > (length / 4) * 3) {
-            return sunk = true
+            return true
         }
-        return sunk = false
+        return false
     }
 
     function getLength() {

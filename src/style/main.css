@@ -58,3 +58,13 @@ main .board-holders {
     }
 }
 
+.endgame-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    color: var(--highlight-color);
+    font-weight: bolder;
+    font-size: 4rem;
+}
