@@ -6,8 +6,24 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 50px;
+    transition: all 0.3s ease;
+    z-index: 4;
 }
 
 footer a {
     color: var(--text-color);
+}
+
+footer a svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-left: 10px;
+    transition: all 0.1s ease;
+}
+
+footer a svg:hover {
+    fill: var(--highlight-color);
+    width: 1.6rem;
+    height: 1.6rem;
 }

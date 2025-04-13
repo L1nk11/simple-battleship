@@ -1,9 +1,26 @@
 import { newPlayer } from "./factories/playerFactory"
-import {setBoards, gameManager} from './gameLogic'
+import {gameManager} from './gameLogic'
+import { loadDarkIcon, loadLightIcon, loadGitIcon, loadRestartIcon } from "./iconLoader"
 
 const body = document.querySelector('body')
 let canProceed = false
 let orientation = 'horizontal'
+
+function setIcons() {
+    const restartButton = document.querySelector('.restart')
+    const githubButton = document.querySelector('.git')
+
+    loadRestartIcon().then((icon) => {
+        restartButton.innerHTML = ''
+        restartButton.appendChild(icon)
+    })
+
+    loadGitIcon().then((icon) => {
+        githubButton.innerHTML = ''
+        githubButton.appendChild(icon)
+    })
+}
+setIcons()
 
 function gameStart() {
     const overlay = document.createElement('div')
@@ -114,11 +131,66 @@ function genBoard(player) {
     return boardHolder
 }
 
-function setTheme() {
+function setTheme(isFromClick) {
     // make function to change theme
-    body.id = 'dark'
+    const themeButton = document.querySelector('.theme')
+
+    if (isFromClick === true) {
+        if (body.id === 'dark') {
+            body.id = 'light'
+            localStorage.setItem('savedTheme', 'light')
+            loadLightIcon().then((icon) => {
+                themeButton.innerHTML = ''
+                themeButton.appendChild(icon)
+            })
+            return
+        }
+        if (body.id === 'light') {
+            body.id = 'dark'
+            localStorage.setItem('savedTheme', 'dark')
+            loadDarkIcon().then((icon) => {
+                themeButton.innerHTML = ''
+                themeButton.appendChild(icon)
+            })
+            return
+        }
+    }
+
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    let savedTheme = localStorage.getItem('savedTheme')
+    if (savedTheme === null) {
+        savedTheme = prefersDark ? 'dark' : 'light'
+        localStorage.setItem('savedTheme', savedTheme)
+        body.id = savedTheme
+    } else {
+        body.id = savedTheme
+        if (savedTheme === 'dark') {
+            localStorage.setItem('savedTheme', 'dark')
+            loadDarkIcon().then((icon) => {
+                themeButton.innerHTML = ''
+                themeButton.appendChild(icon)
+            })
+        }
+        if (savedTheme === 'light') {
+            localStorage.setItem('savedTheme', 'light')
+            loadLightIcon().then((icon) => {
+                themeButton.innerHTML = ''
+                themeButton.appendChild(icon)
+            })
+        }
+    }
 }
 setTheme()
+
+const themeButton = document.querySelector('.theme')
+themeButton.addEventListener('click', () => {
+    setTheme(true)
+})
+
+const restartButton = document.querySelector('.restart')
+restartButton.addEventListener('click', () => {
+    gameStart()
+})
 
 function shipPlacement(player, x, y) {
     if (player.isIndexAtEnd() === true) {
@@ -149,3 +221,4 @@ function markCells(list) {
         cell.id = 'marked'
     });
 }
+

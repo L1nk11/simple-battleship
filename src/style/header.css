@@ -5,4 +5,25 @@ header {
     background-color: var(--bg-color3);
     color: var(--text-color);
     justify-content: space-between;
+    z-index: 4;
+}
+
+header div {
+    display: flex;
+    align-items: center;
+}
+
+header div.title {
+    font-size: 2.5rem;
+    font-weight: bolder;
+    flex-grow: 1;
+    text-align: center;
+    justify-content: center;
+}
+
+header svg {
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    transition: all 0.1s ease;
 }
